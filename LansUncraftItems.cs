@@ -80,44 +80,96 @@ namespace LansUncraftItems
 			return true;
 		}
 
-		public bool uncraftItem(Item item)
+		private bool uncraftItem(Item item, Recipe recipe)
 		{
+			if(item.type == recipe.createItem.type && item.stack >= recipe.createItem.stack)
+			{
+				inventoryWrapper.StartBatch();
+
+				//success = inventoryWrapper.RemoveItem(item.type, 1);
+				foreach (var required in recipe.requiredItem)
+				{
+					var reqItem = required.DeepClone();
+					var ratioBack = GetInstance<Config>().Ratio;
+					int back = (int)(reqItem.stack * ratioBack);
+					float chanceForLast = (reqItem.stack * ratioBack) - back;
+					if (random.NextDouble() <= chanceForLast)
+					{
+						back++;
+					}
+					reqItem.stack = back;
+
+					if (!inventoryWrapper.AddItem(reqItem))
+					{
+						inventoryWrapper.Restore();
+						return false;
+					}
+				}
+
+				if (item.stack > recipe.createItem.stack)
+				{
+					item.stack -= recipe.createItem.stack;
+				}
+				else
+				{
+					item.TurnToAir();
+				}
+				return true;
+			}
+			return false;
+		}
+
+		private bool uncraftItem(Item item, Recipe recipe, bool all) {
+			if(all)
+			{
+				int count = 0;
+				while(uncraftItem(item, recipe))
+				{
+					count++;
+				}
+				return count > 0;
+			}
+			else
+			{
+				return uncraftItem(item, recipe);
+			}
+		}
+
+		public void uncraftItem(Item item, bool all)
+		{
+			List<Recipe> foundRecipes = new List<Recipe>();
 			for(int i=0; i<Main.recipe.Length; i++)
 			{
 				if (Main.recipe[i] != null)
 				{
 					if(Main.recipe[i].createItem.type == item.type)
 					{
-						inventoryWrapper.StartBatch();
-
-						bool success = true;
-
-						//success = inventoryWrapper.RemoveItem(item.type, 1);
-						foreach(var required in Main.recipe[i].requiredItem)
-						{
-							var reqItem = required.DeepClone();
-							var ratioBack = GetInstance<Config>().Ratio;
-							int back = (int) (reqItem.stack * ratioBack);
-							float chanceForLast = (reqItem.stack * ratioBack) - back;
-							if(random.NextDouble()<= chanceForLast)
-							{
-								back++;
-							}
-							reqItem.stack = back;
-
-
-							success = success && inventoryWrapper.AddItem(reqItem);
-						}
-						//Main.NewText("Uncrafted item: "+ success, 155, 155, 155);
-						if (!success)
-						{
-							inventoryWrapper.Restore();
-						}
-						return success;
+						foundRecipes.Add(Main.recipe[i]);
 					}
 				}
 			}
-			return false;
+
+			if(foundRecipes.Count > 0)
+			{
+				if(foundRecipes.Count > 1)
+				{
+					Main.NewText("Multiple uncraft recipes found, first one found is used for now...", new Color(255, 0, 0));
+				}
+
+				bool success = uncraftItem(item, foundRecipes[0], all);
+
+				Recipe.FindRecipes();
+
+				if(!success)
+				{
+					Main.NewText("Not enough items in stack for this uncraft recipe.", new Color(255, 0, 0));
+				}
+
+			}
+			else
+			{
+				Main.NewText("No uncraft recipe found for this item.", new Color(255, 0, 0));
+			}
 		}
 
 		

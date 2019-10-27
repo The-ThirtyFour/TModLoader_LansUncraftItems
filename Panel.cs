@@ -43,52 +43,28 @@ namespace LansUncraftItems
 		{
 			if (Main.mouseItem != null && Main.mouseItem.active)
 			{
-				shift = false;
-				Keys[] pressedKeys = Main.keyState.GetPressedKeys();
-				for (int i = 0; i < pressedKeys.Length; i++)
+				if (Main.LocalPlayer.itemAnimation == 0)
 				{
-					if (pressedKeys[i] == Keys.LeftShift || pressedKeys[i] == Keys.RightShift)
+					shift = false;
+					Keys[] pressedKeys = Main.keyState.GetPressedKeys();
+					for (int i = 0; i < pressedKeys.Length; i++)
 					{
-						shift = true;
-					}
-				}
-
-
-				if (shift)
-				{
-					while (shift && UnlimitedBuffLimit.instance.uncraftItem(Main.mouseItem))
-					{
-
-
-
-						if (Main.mouseItem.stack > 1)
+						if (pressedKeys[i] == Keys.LeftShift || pressedKeys[i] == Keys.RightShift)
 						{
-							Main.mouseItem.stack -= 1;
-						}
-						else
-						{
-							Main.mouseItem.TurnToAir();
-							break;
+							shift = true;
 						}
 					}
-				}
-				else
-				{
-					if (UnlimitedBuffLimit.instance.uncraftItem(Main.mouseItem))
+
+					bool all = false;
+
+					if (shift)
 					{
-
-
-						if (Main.mouseItem.stack > 0)
-						{
-							Main.mouseItem.stack -= 1;
-						}
-						else
-						{
-							Main.mouseItem.TurnToAir();
-						}
+						all = true;
 					}
-				}
 
+					UnlimitedBuffLimit.instance.uncraftItem(Main.mouseItem, all);
+					
+				}
 			}
 		}
 
