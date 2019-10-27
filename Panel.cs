@@ -13,18 +13,20 @@ namespace LansUncraftItems
 	{
 		public static bool visible = false;
 		Texture2D texture;
-		
+
 		bool shift = false;
+
+		UIImageButton panel;
 
 		public override void OnInitialize()
 		{
-			
+
 
 			texture = ModContent.GetTexture("LansUncraftItems/uncraft");
 
 
-			var panel = new UIImageButton(texture);
-				
+			panel = new UIImageButton(texture);
+
 			panel.Left.Set(560, 0);
 			panel.Top.Set(32, 0);
 			panel.Width.Set(60, 0);
@@ -39,7 +41,7 @@ namespace LansUncraftItems
 
 		private void ButtonClicked(UIMouseEvent evt, UIElement listeningElement)
 		{
-			if(Main.mouseItem != null && Main.mouseItem.active)
+			if (Main.mouseItem != null && Main.mouseItem.active)
 			{
 				shift = false;
 				Keys[] pressedKeys = Main.keyState.GetPressedKeys();
@@ -57,7 +59,7 @@ namespace LansUncraftItems
 					while (shift && UnlimitedBuffLimit.instance.uncraftItem(Main.mouseItem))
 					{
 
-						
+
 
 						if (Main.mouseItem.stack > 1)
 						{
@@ -72,8 +74,9 @@ namespace LansUncraftItems
 				}
 				else
 				{
-					if (UnlimitedBuffLimit.instance.uncraftItem(Main.mouseItem)) { 
-						
+					if (UnlimitedBuffLimit.instance.uncraftItem(Main.mouseItem))
+					{
+
 
 						if (Main.mouseItem.stack > 0)
 						{
@@ -89,18 +92,14 @@ namespace LansUncraftItems
 			}
 		}
 
-
-		public override void Update(GameTime gameTime)
+		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
-			base.Update(gameTime);
-
-			if (ContainsPoint(Main.MouseScreen))
+			bool hoveringOverReforgeButton = panel.Left.Pixels <= Main.mouseX && Main.mouseX <= panel.Left.Pixels+panel.Width.Pixels &&
+				panel.Top.Pixels <= Main.mouseY && Main.mouseY <= panel.Top.Pixels + panel.Height.Pixels && !PlayerInput.IgnoreMouseInterface;
+			if (hoveringOverReforgeButton)
 			{
 				Main.LocalPlayer.mouseInterface = true;
 			}
-
 		}
-		
-
 	}
 }
