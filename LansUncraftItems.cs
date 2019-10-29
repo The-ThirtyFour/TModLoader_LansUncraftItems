@@ -16,19 +16,42 @@ using static Terraria.ModLoader.ModContent;
 
 namespace LansUncraftItems
 {
-	public class UnlimitedBuffLimit : Mod
+	public class RecipeBlockCondition
+	{
+		public virtual bool recipeCanBeUsed()
+		{
+			return false;
+		}
+	}
+
+	public class RecipeBlock
+	{
+		public Recipe recipe;
+
+		public RecipeBlockCondition condition;
+
+		public RecipeBlock(Recipe recipe)
+		{
+			this.recipe = recipe;
+		}
+	}
+
+
+	public class LansUncraftItems : Mod
 	{
 
 		PlayerInventoryWrapper inventoryWrapper = new PlayerInventoryWrapper();
 
-		public static UnlimitedBuffLimit instance;
+		public static LansUncraftItems instance;
 
 		internal Panel uncraftPanel;
 		public UserInterface uncraftPanelInterface;
 
 		Random random = new Random();
 
-		public UnlimitedBuffLimit()
+		public List<RecipeBlock> blockedRecipes = new List<RecipeBlock>();
+
+		public LansUncraftItems()
 		{
 			instance = this;
 		}
@@ -46,9 +69,99 @@ namespace LansUncraftItems
 			}
 		}
 
+		
+
 		public override void Unload()
 		{
 			instance = null;
+		}
+
+		public override void PostAddRecipes()
+		{
+			base.PostAddRecipes();
+
+			Mod tokenMod = ModLoader.GetMod("TokenMod");
+			if (tokenMod != null)
+			{
+				ModItem[] blockedCreateItems = new ModItem[] {
+					tokenMod.GetItem("BasicEssence"),
+					tokenMod.GetItem("Tier1Essence"),
+					tokenMod.GetItem("Tier2Essence"),
+					tokenMod.GetItem("Tier3Essence"),
+					tokenMod.GetItem("Tier4Essence"),
+					tokenMod.GetItem("Tier5Essence"),
+					tokenMod.GetItem("Tier6Essence"),
+					tokenMod.GetItem("Tier7Essence")
+				};
+
+				for (int j = 0; j < blockedCreateItems.Length; j++) {
+					if(blockedCreateItems[j] != null)
+					{
+						var item = blockedCreateItems[j].item;
+						for (int i = 0; i < Main.recipe.Length; i++)
+						{
+							if (Main.recipe[i] != null)
+							{
+								if (Main.recipe[i].createItem.type == item.type)
+								{
+									blockedRecipes.Add(new RecipeBlock(Main.recipe[i]));
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			Mod imkSushisMod = ModLoader.GetMod("imkSushisMod");
+			if (imkSushisMod != null)
+			{
+				
+				ModItem[] blockedCreateItems = new ModItem[] {
+					imkSushisMod.GetItem("FishingHardmodeToken"),
+					imkSushisMod.GetItem("FishingStartToken"),
+					imkSushisMod.GetItem("LootGoblinsToken"),
+					imkSushisMod.GetItem("LootHardmodeToken"),
+					imkSushisMod.GetItem("LootMartiansToken"),
+					imkSushisMod.GetItem("LootMechToken"),
+					imkSushisMod.GetItem("LootPiratesToken"),
+					imkSushisMod.GetItem("LootPlanteraToken"),
+					imkSushisMod.GetItem("LootSkeletronToken"),
+					imkSushisMod.GetItem("LootStartToken"),
+					imkSushisMod.GetItem("SpacePurityHardmodeToken"),
+					imkSushisMod.GetItem("SpacePurityStartToken"),
+					imkSushisMod.GetItem("SurfaceDesertStartToken"),
+					imkSushisMod.GetItem("SurfacePurityEocToken"),
+					imkSushisMod.GetItem("SurfacePurityStartToken"),
+					imkSushisMod.GetItem("SwapToken"),
+					imkSushisMod.GetItem("TempleJunglePlanteraToken"),
+					imkSushisMod.GetItem("UndergroundCorruptionEocToken"),
+					imkSushisMod.GetItem("UndergroundCrimsonEocToken"),
+					imkSushisMod.GetItem("UndergroundDungeonSkeletronToken"),
+					imkSushisMod.GetItem("UndergroundJungleStartToken"),
+					imkSushisMod.GetItem("UndergroundPurityStartToken"),
+					imkSushisMod.GetItem("UndergroundSnowStartToken"),
+					imkSushisMod.GetItem("UnderwaterOceanStartToken"),
+					imkSushisMod.GetItem("UnderworldHellSkeletronToken")
+				};
+
+				for (int j = 0; j < blockedCreateItems.Length; j++)
+				{
+					if (blockedCreateItems[j] != null)
+					{
+						var item = blockedCreateItems[j].item;
+						for (int i = 0; i < Main.recipe.Length; i++)
+						{
+							if (Main.recipe[i] != null)
+							{
+								if (Main.recipe[i].createItem.type == item.type)
+								{
+									blockedRecipes.Add(new RecipeBlock(Main.recipe[i]));
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 
 
@@ -138,13 +251,30 @@ namespace LansUncraftItems
 		public void uncraftItem(Item item, bool all)
 		{
 			List<Recipe> foundRecipes = new List<Recipe>();
-			for(int i=0; i<Main.recipe.Length; i++)
+			List<Recipe> foundBlockedRecipes = new List<Recipe>();
+			for (int i=0; i<Main.recipe.Length; i++)
 			{
 				if (Main.recipe[i] != null)
 				{
 					if(Main.recipe[i].createItem.type == item.type)
 					{
-						foundRecipes.Add(Main.recipe[i]);
+						var inBlocked = false;
+						foreach(var b in blockedRecipes)
+						{
+							if (b.recipe == Main.recipe[i])
+							{
+								inBlocked = true;
+							}
+						}
+
+						if (inBlocked)
+						{
+							foundBlockedRecipes.Add(Main.recipe[i]);
+						}
+						else
+						{
+							foundRecipes.Add(Main.recipe[i]);
+						}
 					}
 				}
 			}
@@ -168,7 +298,14 @@ namespace LansUncraftItems
 			}
 			else
 			{
-				Main.NewText("No uncraft recipe found for this item.", new Color(255, 0, 0));
+				if(foundBlockedRecipes.Count > 0)
+				{
+					Main.NewText("Uncraft recipe for this item has been disabled.", new Color(255, 0, 0));
+				}
+				else
+				{
+					Main.NewText("No uncraft recipe found for this item.", new Color(255, 0, 0));
+				}
 			}
 		}
 

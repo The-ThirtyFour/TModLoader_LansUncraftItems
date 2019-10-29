@@ -62,7 +62,7 @@ namespace LansUncraftItems
 						all = true;
 					}
 
-					UnlimitedBuffLimit.instance.uncraftItem(Main.mouseItem, all);
+					LansUncraftItems.instance.uncraftItem(Main.mouseItem, all);
 					
 				}
 			}
