@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.779
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LansUncraftItems", "LansUncraftItems.csproj", "{7FE28A8F-328B-43FD-A762-EE247D8B2F0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LansUncraftItems", "LansUncraftItems.csproj", "{BD17B430-6403-4E0E-8A33-E494558F7D9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7FE28A8F-328B-43FD-A762-EE247D8B2F0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7FE28A8F-328B-43FD-A762-EE247D8B2F0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7FE28A8F-328B-43FD-A762-EE247D8B2F0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7FE28A8F-328B-43FD-A762-EE247D8B2F0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD17B430-6403-4E0E-8A33-E494558F7D9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD17B430-6403-4E0E-8A33-E494558F7D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD17B430-6403-4E0E-8A33-E494558F7D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD17B430-6403-4E0E-8A33-E494558F7D9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E2EBE962-7F24-4C9D-9D27-6A07B4A0F21E}
+		SolutionGuid = {167A63E2-D4BE-42AA-9443-E5F94A4FA840}
 	EndGlobalSection
 EndGlobal

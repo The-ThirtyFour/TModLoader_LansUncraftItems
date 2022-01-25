@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
@@ -12,7 +13,7 @@ namespace LansUncraftItems
 	class Panel : UIState
 	{
 		public static bool visible = false;
-		Texture2D texture;
+		Asset<Texture2D> texture;
 
 		bool shift = false;
 
@@ -22,7 +23,7 @@ namespace LansUncraftItems
 		{
 
 
-			texture = ModContent.GetTexture("LansUncraftItems/uncraft");
+			texture = ModContent.Request<Texture2D>("LansUncraftItems/uncraft");
 
 
 			panel = new UIImageButton(texture);

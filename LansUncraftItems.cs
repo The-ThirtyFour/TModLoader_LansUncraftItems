@@ -36,6 +36,18 @@ namespace LansUncraftItems
 		}
 	}
 
+	public class ModBlockedItemDef
+    {
+		public string ModName;
+		public string[] ModItems;
+
+        public ModBlockedItemDef(string modName, string[] modItems)
+        {
+            ModName = modName;
+            ModItems = modItems;
+        }
+    }
+
 
 	public class LansUncraftItems : Mod
 	{
@@ -44,8 +56,7 @@ namespace LansUncraftItems
 
 		public static LansUncraftItems instance;
 
-		internal Panel uncraftPanel;
-		public UserInterface uncraftPanelInterface;
+		
 
 		Random random = new Random();
 
@@ -58,15 +69,7 @@ namespace LansUncraftItems
 
 		public override void Load()
 		{
-			// this makes sure that the UI doesn't get opened on the server
-			// the server can't see UI, can it? it's just a command prompt
-			if (!Main.dedServ)
-			{
-				uncraftPanel = new Panel();
-				uncraftPanel.Initialize();
-				uncraftPanelInterface = new UserInterface();
-				uncraftPanelInterface.SetState(uncraftPanel);
-			}
+			
 		}
 
 		
@@ -76,121 +79,100 @@ namespace LansUncraftItems
 			instance = null;
 		}
 
+		private void BlockMods(ModBlockedItemDef[] modDefs)
+        {
+			foreach (var modDef in modDefs)
+			{
+				String modName = modDef.ModName;
+				Mod externalMod = null;
+				if (ModLoader.TryGetMod(modName, out externalMod))
+				{
+					string[] itemNames = modDef.ModItems;
+					ModItem[] blockedCreateItems = new ModItem[itemNames.Length];
+
+					for (int i = 0; i < itemNames.Length; i++)
+					{
+						if (!ModContent.TryFind(modName, "BasicEssence", out blockedCreateItems[i]))
+						{
+							throw new Exception($"{modName}'s items seems to have changed, LansUncraftItems can no longer support it. Please remove either mod.");
+						}
+					}
+
+					for (int j = 0; j < blockedCreateItems.Length; j++)
+					{
+						if (blockedCreateItems[j] != null)
+						{
+							var item = blockedCreateItems[j].Item;
+							for (int i = 0; i < Main.recipe.Length; i++)
+							{
+								if (Main.recipe[i] != null)
+								{
+									if (Main.recipe[i].createItem.type == item.type)
+									{
+										blockedRecipes.Add(new RecipeBlock(Main.recipe[i]));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 		public override void PostAddRecipes()
 		{
 			base.PostAddRecipes();
 
-			Mod tokenMod = ModLoader.GetMod("TokenMod");
-			if (tokenMod != null)
-			{
-				ModItem[] blockedCreateItems = new ModItem[] {
-					tokenMod.GetItem("BasicEssence"),
-					tokenMod.GetItem("Tier1Essence"),
-					tokenMod.GetItem("Tier2Essence"),
-					tokenMod.GetItem("Tier3Essence"),
-					tokenMod.GetItem("Tier4Essence"),
-					tokenMod.GetItem("Tier5Essence"),
-					tokenMod.GetItem("Tier6Essence"),
-					tokenMod.GetItem("Tier7Essence")
-				};
 
-				for (int j = 0; j < blockedCreateItems.Length; j++) {
-					if(blockedCreateItems[j] != null)
-					{
-						var item = blockedCreateItems[j].item;
-						for (int i = 0; i < Main.recipe.Length; i++)
-						{
-							if (Main.recipe[i] != null)
-							{
-								if (Main.recipe[i].createItem.type == item.type)
-								{
-									blockedRecipes.Add(new RecipeBlock(Main.recipe[i]));
-								}
-							}
-						}
-					}
-				}
-			}
-			
-			Mod imkSushisMod = ModLoader.GetMod("imkSushisMod");
-			if (imkSushisMod != null)
-			{
-				
-				ModItem[] blockedCreateItems = new ModItem[] {
-					imkSushisMod.GetItem("FishingHardmodeToken"),
-					imkSushisMod.GetItem("FishingStartToken"),
-					imkSushisMod.GetItem("LootGoblinsToken"),
-					imkSushisMod.GetItem("LootHardmodeToken"),
-					imkSushisMod.GetItem("LootMartiansToken"),
-					imkSushisMod.GetItem("LootMechToken"),
-					imkSushisMod.GetItem("LootPiratesToken"),
-					imkSushisMod.GetItem("LootPlanteraToken"),
-					imkSushisMod.GetItem("LootSkeletronToken"),
-					imkSushisMod.GetItem("LootStartToken"),
-					imkSushisMod.GetItem("SpacePurityHardmodeToken"),
-					imkSushisMod.GetItem("SpacePurityStartToken"),
-					imkSushisMod.GetItem("SurfaceDesertStartToken"),
-					imkSushisMod.GetItem("SurfacePurityEocToken"),
-					imkSushisMod.GetItem("SurfacePurityStartToken"),
-					imkSushisMod.GetItem("SwapToken"),
-					imkSushisMod.GetItem("TempleJunglePlanteraToken"),
-					imkSushisMod.GetItem("UndergroundCorruptionEocToken"),
-					imkSushisMod.GetItem("UndergroundCrimsonEocToken"),
-					imkSushisMod.GetItem("UndergroundDungeonSkeletronToken"),
-					imkSushisMod.GetItem("UndergroundJungleStartToken"),
-					imkSushisMod.GetItem("UndergroundPurityStartToken"),
-					imkSushisMod.GetItem("UndergroundSnowStartToken"),
-					imkSushisMod.GetItem("UnderwaterOceanStartToken"),
-					imkSushisMod.GetItem("UnderworldHellSkeletronToken")
-				};
-
-				for (int j = 0; j < blockedCreateItems.Length; j++)
+			BlockMods(
+				new ModBlockedItemDef[]
 				{
-					if (blockedCreateItems[j] != null)
-					{
-						var item = blockedCreateItems[j].item;
-						for (int i = 0; i < Main.recipe.Length; i++)
+					new ModBlockedItemDef(
+						"TokenMod",
+						new string[]
 						{
-							if (Main.recipe[i] != null)
-							{
-								if (Main.recipe[i].createItem.type == item.type)
-								{
-									blockedRecipes.Add(new RecipeBlock(Main.recipe[i]));
-								}
-							}
+							"BasicEssence",
+							"Tier1Essence",
+							"Tier2Essence",
+							"Tier3Essence",
+							"Tier4Essence",
+							"Tier5Essence",
+							"Tier6Essence",
+							"Tier7Essence"
 						}
-					}
-				}
-			}
-		}
-
-
-		public override void UpdateUI(GameTime gameTime)
-		{
-			// it will only draw if the player is not on the main menu
-			if (Main.playerInventory)
-			{
-				uncraftPanelInterface?.Update(gameTime);
-			}
-		}
-
-		public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
-		{
-			int mouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Mouse Text"));
-			if (mouseTextIndex != -1)
-			{
-				layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer("UncraftPanelLayer", DrawSomethingUI, InterfaceScaleType.UI));
-			}
-		}
-
-		private bool DrawSomethingUI()
-		{
-			// it will only draw if the player is not on the main menu
-			if (Main.playerInventory)
-			{
-				uncraftPanelInterface.Draw(Main.spriteBatch, new GameTime());
-			}
-			return true;
+					),
+					new ModBlockedItemDef(
+						"imkSushisMod",
+						new string[]
+						{
+							"FishingHardmodeToken",
+							"FishingStartToken",
+							"LootGoblinsToken",
+							"LootHardmodeToken",
+							"LootMartiansToken",
+							"LootMechToken",
+							"LootPiratesToken",
+							"LootPlanteraToken",
+							"LootSkeletronToken",
+							"LootStartToken",
+							"SpacePurityHardmodeToken",
+							"SpacePurityStartToken",
+							"SurfaceDesertStartToken",
+							"SurfacePurityEocToken",
+							"SurfacePurityStartToken",
+							"SwapToken",
+							"TempleJunglePlanteraToken",
+							"UndergroundCorruptionEocToken",
+							"UndergroundCrimsonEocToken",
+							"UndergroundDungeonSkeletronToken",
+							"UndergroundJungleStartToken",
+							"UndergroundPurityStartToken",
+							"UndergroundSnowStartToken",
+							"UnderwaterOceanStartToken",
+							"UnderworldHellSkeletronToken"
+						}
+					),
+			});
 		}
 
 		private bool uncraftItem(Item item, Recipe recipe)
@@ -202,7 +184,7 @@ namespace LansUncraftItems
 				//success = inventoryWrapper.RemoveItem(item.type, 1);
 				foreach (var required in recipe.requiredItem)
 				{
-					var reqItem = required.DeepClone();
+					var reqItem = required.Clone();
 					var ratioBack = GetInstance<Config>().Ratio;
 					int back = (int)(reqItem.stack * ratioBack);
 					float chanceForLast = (reqItem.stack * ratioBack) - back;
@@ -320,7 +302,7 @@ namespace LansUncraftItems
 		{
 			for (int k = 0; k < 50; k++)
 			{
-				backup[k] = Main.LocalPlayer.inventory[k].DeepClone();
+				backup[k] = Main.LocalPlayer.inventory[k].Clone();
 			}
 		}
 
