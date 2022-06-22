@@ -1,0 +1,13 @@
+"workshopitem"
+{
+	"appid"		"1281930"
+	"contentfolder"		"C:/Users/Lanboost/Documents/My Games/Terraria/tModLoader/ModSources/LansUncraftItems/artifacts"
+    "previewfile" "C:/Users/Lanboost/Documents/My Games/Terraria/tModLoader/ModSources/LansUncraftItems/icon.png"
+	"visibility"		"0"
+	"title"		"Lan's Uncraft Items"
+	"description"		"Make you able to uncraft items, meaning you will destroy the item and get the resource back (or a % of it), this is done with the hammer button to the right of inventory!
+
+Now supports disabled token recipes for: ImkSushisMod and TokenMod"
+	"changenote"		"Version 2022.06.22"
+	"publishedfileid"		"2731445586"
+}

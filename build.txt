@@ -1,6 +1,6 @@
 displayName = Lan's Uncraft Items
 author = Lanboost
-version = 2.0.0
+version = 2022.06.22
 includePDB = true
 includeSource = true
 homepage = https://github.com/Lanboost/TModLoader_LansUncraftItems
