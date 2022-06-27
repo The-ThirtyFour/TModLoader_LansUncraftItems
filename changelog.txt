@@ -1,0 +1,2 @@
+v. 2022.06.27:
+	- Fixed issue with not checking if mouse item is Air, thanks to "Xoff" for reporting this issue.

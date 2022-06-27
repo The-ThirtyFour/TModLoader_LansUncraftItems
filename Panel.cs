@@ -42,7 +42,7 @@ namespace LansUncraftItems
 
 		private void ButtonClicked(UIMouseEvent evt, UIElement listeningElement)
 		{
-			if (Main.mouseItem != null && Main.mouseItem.active)
+			if (Main.mouseItem != null && Main.mouseItem.active && !Main.mouseItem.IsAir)
 			{
 				if (Main.LocalPlayer.itemAnimation == 0)
 				{
