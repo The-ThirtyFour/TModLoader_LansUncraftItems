@@ -22,5 +22,5 @@ namespace LansUncraftItems
 		[DefaultValue(0.9f)]
 		public float Ratio;
 
-	}
+    }
 }

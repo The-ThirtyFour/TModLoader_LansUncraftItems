@@ -1,6 +1,17 @@
 # Lanboosts Uncraft Items for Terraria (TModLoader)
- Make you able to uncraft items, meaning you will destroy the item and get the resource back (or a % of it), this is done with the hammer button to the right of inventory!
+Make you able to uncraft items, meaning you will destroy the item and get the resource back (or a % of it), this is done with the hammer button to the right of inventory!
 
+# Changelog:
+
+V. 2022.07.21.1:
+	- Change UI to allow for multiple recipes.
+	- Change UI to allow for converting between recipe groups.
+
+V. 2022.07.20:
+	- Remove imkSushi as a blocked mod due to it no longer having tokens.
+
+V. 2022.07.19:
+	- Update to get new version on workshop.
 
 # Other TModLoader mods by me:
 * [Lanboosts Auto Join Team](https://github.com/Lanboost/TModLoader_LansAutoJoinTeam)

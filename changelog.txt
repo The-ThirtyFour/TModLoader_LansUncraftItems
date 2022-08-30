@@ -1,2 +1,19 @@
+V. 2022.08.17:
+	- Updated underlying UI library
+	- Should fix scrollbar
+	- Should fix ui not showing
+
+	- Underlying ui-lib is still much WIP, so might still be buggy
+
+V. 2022.07.21.1:
+	- Change UI to allow for multiple recipes.
+	- Change UI to allow for converting between recipe groups.
+
+V. 2022.07.20:
+	- Remove imkSushi as a blocked mod due to it no longer having tokens.
+
+V. 2022.07.19:
+	- Update to get new version on workshop.
+
 v. 2022.06.27:
 	- Fixed issue with not checking if mouse item is Air, thanks to "Xoff" for reporting this issue.
