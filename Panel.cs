@@ -32,7 +32,7 @@ namespace LansUncraftItems
 			panel.Width.Set(60, 0);
 			panel.Height.Set(60, 0);
 
-			panel.OnClick += new MouseEvent(ButtonClicked);
+			panel.OnLeftClick += new MouseEvent(ButtonClicked);
 
 		}
 

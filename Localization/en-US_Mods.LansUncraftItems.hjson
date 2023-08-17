@@ -1,0 +1,24 @@
+Configs: {
+	ClientConfig: {
+		DisplayName: Client Config
+
+		OffsetX: {
+			Label: Offset Icon By X Pixels To The Right
+			Tooltip: ""
+		}
+
+		OffsetY: {
+			Label: Offset Icon By Y Pixels To The Bottom
+			Tooltip: ""
+		}
+	}
+
+	Config: {
+		DisplayName: Config
+
+		Ratio: {
+			Label: Ratio of items to get back for an uncrafted item
+			Tooltip: Rounding is handled by a chance to get the resource back
+		}
+	}
+}

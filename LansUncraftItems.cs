@@ -19,7 +19,17 @@ using Microsoft.Xna.Framework.Input;
 
 namespace LansUncraftItems
 {
+	public struct UncraftResult
+	{
+		public bool success = true;
+		public string errorReason = "";
 
+        public UncraftResult(bool success, string errorReason = "")
+        {
+            this.success = success;
+            this.errorReason = errorReason;
+        }
+    }
 
 	public class LansUncraftItemsUI : ModSystem
 	{
@@ -65,7 +75,7 @@ namespace LansUncraftItems
 
 		public void RecreatePanel()
 		{
-            panel = LansUILib.UIFactory.CreatePanel("Main Panel");
+            panel = LansUILib.UIFactory.CreatePanel("Main Panel", true, false);
 
             panel.SetAnchor(LansUILib.ui.AnchorPosition.TopLeft);
 			panel.SetSize(panelSize[0], panelSize[1], panelSize[2], panelSize[3]);
@@ -105,10 +115,10 @@ namespace LansUncraftItems
 				{
 					if (Main.LocalPlayer.itemAnimation == 0)
 					{
-						var success = LansUncraftItems.Instance.UncraftItem(Main.mouseItem, r, false);
-                        if (!success)
+						var res = LansUncraftItems.Instance.UncraftItem(Main.mouseItem, r, false);
+                        if (!res.success)
                         {
-                            Main.NewText("Not enough items in stack for this uncraft recipe.", new Color(255, 0, 0));
+                            Main.NewText(res.errorReason, new Color(255, 0, 0));
                         }
                     }
                 };
@@ -119,10 +129,10 @@ namespace LansUncraftItems
                 {
                     if (Main.LocalPlayer.itemAnimation == 0)
                     {
-                        var success = LansUncraftItems.Instance.UncraftItem(Main.mouseItem, r, true);
-                        if (!success)
+                        var res = LansUncraftItems.Instance.UncraftItem(Main.mouseItem, r, true);
+                        if (!res.success)
                         {
-                            Main.NewText("Not enough items in stack for this uncraft recipe.", new Color(255, 0, 0));
+                            Main.NewText(res.errorReason, new Color(255, 0, 0));
                         }
                     }
                 };
@@ -406,7 +416,7 @@ namespace LansUncraftItems
             }
         }
 
-        private bool uncraftItem(Item item, Recipe recipe)
+        private UncraftResult uncraftItem(Item item, Recipe recipe)
 		{
 			if(item.type == recipe.createItem.type && item.stack >= recipe.createItem.stack)
 			{
@@ -428,7 +438,7 @@ namespace LansUncraftItems
 					if (!inventoryWrapper.AddItem(reqItem))
 					{
 						inventoryWrapper.Restore();
-						return false;
+						return new UncraftResult(false, "Not enough space in inventory to uncraft.");
 					}
 				}
 
@@ -440,20 +450,28 @@ namespace LansUncraftItems
 				{
 					item.TurnToAir();
 				}
-				return true;
+				return new UncraftResult(true);
 			}
-			return false;
+			return new UncraftResult(false, "Not enough items in stack to uncraft."); ;
 		}
 
-		public bool UncraftItem(Item item, Recipe recipe, bool all) {
+		public UncraftResult UncraftItem(Item item, Recipe recipe, bool all) {
 			if(all)
 			{
 				int count = 0;
-				while(uncraftItem(item, recipe))
+				while(true)
 				{
-					count++;
+					var res = uncraftItem(item, recipe);
+					if(!res.success)
+					{
+						if(count > 0)
+						{
+							return new UncraftResult(true);
+                        }
+                        return res;
+                    }
+                    count++;
 				}
-				return count > 0;
 			}
 			else
 			{
@@ -580,13 +598,13 @@ namespace LansUncraftItems
 					Main.NewText("Multiple uncraft recipes found, first one found is used for now...", new Color(255, 0, 0));
 				}
 
-				bool success = UncraftItem(item, foundRecipes[0], all);
+				var res = UncraftItem(item, foundRecipes[0], all);
 
 				Recipe.FindRecipes();
 
-				if(!success)
+				if(!res.success)
 				{
-					Main.NewText("Not enough items in stack for this uncraft recipe.", new Color(255, 0, 0));
+					Main.NewText(res.errorReason, new Color(255, 0, 0));
 				}
 
 			}
