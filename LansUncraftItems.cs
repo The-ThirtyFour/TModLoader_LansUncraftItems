@@ -75,7 +75,7 @@ namespace LansUncraftItems
 
 		public void RecreatePanel()
 		{
-            panel = LansUILib.UIFactory.CreatePanel("Main Panel", true, false);
+            panel = LansUILib.UIFactory.CreatePanel("Main Panel", true, true);
 
             panel.SetAnchor(LansUILib.ui.AnchorPosition.TopLeft);
 			panel.SetSize(panelSize[0], panelSize[1], panelSize[2], panelSize[3]);
