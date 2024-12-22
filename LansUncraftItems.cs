@@ -12,6 +12,7 @@ using Terraria.UI;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using static Terraria.ModLoader.ModContent;
+using Microsoft.Xna.Framework.Input;
 
 
 namespace LansUncraftItems
@@ -47,6 +48,9 @@ namespace LansUncraftItems
 		internal Panel uncraftPanel;
 		public UserInterface uncraftPanelInterface;
 
+		internal recipepanel recipanel;
+		public UserInterface recipanelInterface;
+
 		Random random = new Random();
 
 		public List<RecipeBlock> blockedRecipes = new List<RecipeBlock>();
@@ -66,7 +70,12 @@ namespace LansUncraftItems
 				uncraftPanel.Initialize();
 				uncraftPanelInterface = new UserInterface();
 				uncraftPanelInterface.SetState(uncraftPanel);
-			}
+
+				recipanel = new recipepanel();
+				recipanel.Initialize();
+				recipanelInterface = new UserInterface();
+				recipanelInterface.SetState(recipanel);
+            }
 		}
 
 		
@@ -171,6 +180,7 @@ namespace LansUncraftItems
 			if (Main.playerInventory)
 			{
 				uncraftPanelInterface?.Update(gameTime);
+				recipanelInterface?.Update(gameTime);
 			}
 		}
 
@@ -189,6 +199,7 @@ namespace LansUncraftItems
 			if (Main.playerInventory)
 			{
 				uncraftPanelInterface.Draw(Main.spriteBatch, new GameTime());
+				recipanelInterface.Draw(Main.spriteBatch, new GameTime());
 			}
 			return true;
 		}
@@ -283,7 +294,9 @@ namespace LansUncraftItems
 			{
 				if(foundRecipes.Count > 1)
 				{
-					Main.NewText("Multiple uncraft recipes found, first one found is used for now...", new Color(255, 0, 0));
+					//Main.NewText("Multiple uncraft recipes found, first one found is used for now...", new Color(255, 0, 0));
+					UncraftMultipleItems(item, foundRecipes);
+					return;
 				}
 
 				bool success = uncraftItem(item, foundRecipes[0], all);
@@ -308,9 +321,50 @@ namespace LansUncraftItems
 				}
 			}
 		}
+		public void UncraftMultipleItems(Item item, List<Recipe> recipes)
+		{
+			recipanel.AddRecipes(recipes);
 
-		
-	}
+			foreach(TextButton textbutton in recipanel.indexes)
+			{
+                textbutton.Uncraft += Textbutton_Uncraft;
+			}
+        }
+
+        private void Textbutton_Uncraft(UIMouseEvent evt, UIElement parent, TextButton obj, Recipe selfRecipe, Item item, EventArgs e)
+        {
+            bool shift = false;
+            Keys[] pressedKeys = Main.keyState.GetPressedKeys();
+            for (int i = 0; i < pressedKeys.Length; i++)
+            {
+                if (pressedKeys[i] == Keys.LeftShift || pressedKeys[i] == Keys.RightShift)
+                {
+                    shift = true;
+                }
+            }
+
+            bool all = false;
+
+            if (shift)
+            {
+                all = true;
+            }
+            if (all)
+			{
+				int count = 0;
+				while(uncraftItem(item, selfRecipe))
+				{
+					count++;
+				}
+				return;
+			}
+			else
+			{
+				uncraftItem(item, selfRecipe);
+				return;
+			}
+        }
+    }
 
 	public class PlayerInventoryWrapper
 	{
